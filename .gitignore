@@ -1,0 +1,55 @@
+# Cache, session files and logs (Symfony)
+/var/cache/*
+/var/log/*
+/var/sessions/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+!var/sessions/.gitkeep
+
+# Configuración local
+.env.local
+.env.local.php
+.env.*.local
+
+# Dependencias
+/vendor/
+/node_modules/
+
+# PHPUnit
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+
+# Build data
+/build/
+
+# Composer
+composer.phar
+
+# Backup entities generated with doctrine:generate:entities command
+**/Entity/*~
+
+# Archivos de IDE y editores
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+*~
+.*.swp
+.DS_Store
+
+# Assets y archivos públicos generados
+/public/bundles/
+/public/uploads/
+/public/build/
+/public/dist/
+
+# Variables de entorno - Commitear .env para configuración por defecto
+#.env
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+/coverage/
+.php-cs-fixer.cache
