@@ -1,0 +1,58 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    app.mailer.from_email: 'noreply@inventario.example.com'
+    app.mailer.from_name: 'Sistema de Gestión de Inventario'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Infrastructure/Persistence/Doctrine/Entity/'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    
+    # Configuración del servicio de email
+    App\Infrastructure\Email\Contract\EmailSenderInterface:
+        class: App\Infrastructure\Email\SymfonyMailer
+        arguments:
+            $fromEmail: '%app.mailer.from_email%'
+            $fromName: '%app.mailer.from_name%'
+
+    # Registrar el repositorio de producto
+    App\Domain\Product\Contract\ProductRepositoryInterface:
+        class: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository
+
+    # Registrar el servicio de dominio para productos
+    App\Domain\Product\Service\ProductService:
+        arguments:
+            $repository: '@App\Domain\Product\Contract\ProductRepositoryInterface'
+
+    # Registrar el servicio de aplicación para inventario
+    App\Application\Service\InventoryService:
+        arguments:
+            $productService: '@App\Domain\Product\Service\ProductService'
+            $eventDispatcher: '@event_dispatcher'
+
+    # Registrar explícitamente la extensión de Markdown para Twig
+    App\Twig\MarkdownExtension:
+        tags: ['twig.extension']
+
+    # Registrar el servicio de MongoDB
+    App\Domain\Product\Contract\ProductMongoRepositoryInterface:
+        class: App\Infrastructure\Persistence\MongoDB\Repository\MongoProductRepository
+        arguments: ['%env(MONGODB_URL)%']
