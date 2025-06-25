@@ -3,6 +3,7 @@
 namespace App\Application\Event;
 
 use App\Domain\Product\Event\ProductUpdatedEvent;
+use App\Infrastructure\Email\Contract\EmailSenderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -11,11 +12,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ProductUpdatedListener implements EventSubscriberInterface
 {
-    private $logger;
+    private LoggerInterface $logger;
+    private EmailSenderInterface $emailSender;
 
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        EmailSenderInterface $emailSender
+    ) {
         $this->logger = $logger;
+        $this->emailSender = $emailSender;
     }
 
     public static function getSubscribedEvents(): array
@@ -45,6 +50,26 @@ class ProductUpdatedListener implements EventSubscriberInterface
             ]
         );
 
-        // Aquí se pueden agregar más acciones como enviar emails, notificaciones, etc.
+        // Enviar correo de notificación
+        $subject = 'Producto actualizado: ' . $product->getName()->value();
+        
+        $body = sprintf(
+            '<h1>Se ha actualizado un producto</h1>
+            <p>Detalles del producto:</p>
+            <ul>
+                <li><strong>ID:</strong> %s</li>
+                <li><strong>Nombre:</strong> %s</li>
+                <li><strong>Descripción:</strong> %s</li>
+                <li><strong>Precio:</strong> %.2f</li>
+                <li><strong>Stock:</strong> %d</li>
+            </ul>',
+            $product->getId()->value(),
+            $product->getName()->value(),
+            $product->getDescription(),
+            $product->getPrice()->value(),
+            $product->getStock()->value()
+        );
+        
+        $this->emailSender->send('pepe@up-spain.com', $subject, $body);
     }
 }

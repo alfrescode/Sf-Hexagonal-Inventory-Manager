@@ -3,6 +3,7 @@
 namespace App\Application\Event;
 
 use App\Domain\Product\Event\ProductDeletedEvent;
+use App\Infrastructure\Email\Contract\EmailSenderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -12,10 +13,14 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ProductDeletedListener implements EventSubscriberInterface
 {
     private LoggerInterface $logger;
+    private EmailSenderInterface $emailSender;
 
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        EmailSenderInterface $emailSender
+    ) {
         $this->logger = $logger;
+        $this->emailSender = $emailSender;
     }
 
     public static function getSubscribedEvents(): array
@@ -40,6 +45,16 @@ class ProductDeletedListener implements EventSubscriberInterface
             ]
         );
 
-        // Aquí se pueden agregar más acciones como enviar emails, notificaciones, etc.
+        // Enviar correo de notificación
+        $subject = 'Producto eliminado del inventario';
+        
+        $body = sprintf(
+            '<h1>Se ha eliminado un producto</h1>
+            <p>El producto con ID <strong>%s</strong> ha sido eliminado del sistema.</p>
+            <p>Esta es una notificación automática. Por favor, no responda a este correo.</p>',
+            $event->getProductId()
+        );
+        
+        $this->emailSender->send('pepe@up-spain.com', $subject, $body);
     }
 }
