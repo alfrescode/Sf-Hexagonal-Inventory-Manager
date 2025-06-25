@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Consola Web y Profiler{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .command-section {
+            margin-bottom: 2rem;
+        }
+        .command-item {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .command-code {
+            background-color: #212529;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            margin-bottom: 0.5rem;
+        }
+        .profiler-feature {
+            border-left: 4px solid #0d6efd;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Consola Web y Profiler</h1>
+    
+    {% for section, items in commands %}
+        <div class="command-section">
+            <h2 class="mb-3">{{ section }}</h2>
+            
+            {% if section != 'Profiler de Symfony' %}
+                {% for command, description in items %}
+                    <div class="command-item">
+                        <div class="command-code">{{ command }}</div>
+                        <div class="command-description">{{ description }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <p>{{ items.Descripción }}</p>
+                        
+                        <h4 class="mt-4">Características principales</h4>
+                        {% for feature, description in items['Características principales'] %}
+                            <div class="profiler-feature">
+                                <h5>{{ feature }}</h5>
+                                <p>{{ description }}</p>
+                            </div>
+                        {% endfor %}
+                        
+                        <h4 class="mt-4">Cómo usar el Profiler</h4>
+                        <a href="/profiler" class="btn btn-primary">Ir al Profiler</a>
+                        <p>{{ items['Cómo usar'] }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    
+    <div class="mt-4 mb-4">
+        <a href="{{ path('app_home') }}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test de Correos{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Test de Sistema de Correos</h1>
+    
+    <div class="d-flex justify-content-between mb-4">
+        <a href="{{ path('app_email_test_send') }}" class="btn btn-primary">Enviar correo de prueba</a>
+        <a href="{{ path('app_email_test_clear') }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar todos los correos?')">Limpiar correos</a>
+    </div>
+    
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
+    <h2>Correos enviados ({{ emails|length }})</h2>
+    
+    {% if emails is empty %}
+        <div class="alert alert-info">
+            No hay correos enviados aún. Usa el botón "Enviar correo de prueba" para generar uno.
+        </div>
+    {% else %}
+        <div class="accordion" id="emailsAccordion">
+            {% for email in emails %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                            <strong>{{ email.filename }}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; {{ email.date }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#emailsAccordion">
+                        <div class="accordion-body">
+                            <div class="card">
+                                <div class="card-header">
+                                    Contenido del correo
+                                </div>
+                                <div class="card-body">
+                                    <pre class="email-content">{{ email.content }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .email-content {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}

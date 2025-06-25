@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Simple de Correo{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Test Simple de Correo</h1>
+    
+    {% if success %}
+        <div class="alert alert-success">
+            <h4 class="alert-heading">¡Correo enviado correctamente!</h4>
+            <p>El correo ha sido enviado correctamente al servidor SMTP configurado.</p>
+            <hr>
+            <p class="mb-0">Detalles del correo:</p>
+            <ul>
+                <li><strong>Destinatario:</strong> pepe@up-spain.com</li>
+                <li><strong>Asunto:</strong> Correo de prueba simple</li>
+                <li><strong>Contenido:</strong> "Este es un correo de prueba simple"</li>
+            </ul>
+        </div>
+    {% else %}
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">¡Error al enviar el correo!</h4>
+            <p>No se ha podido enviar el correo. Verifica la configuración del mailer en el archivo .env.</p>
+        </div>
+    {% endif %}
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            Configuración actual del mailer
+        </div>
+        <div class="card-body">
+            <p><strong>MAILER_DSN:</strong> <code>{{ app.request.server.get('MAILER_DSN') ?: 'No disponible' }}</code></p>
+            <p>Para probar diferentes configuraciones, modifica el valor de <code>MAILER_DSN</code> en el archivo <code>.env</code>.</p>
+            
+            <h5 class="mt-3">Opciones comunes:</h5>
+            <ul>
+                <li><code>smtp://localhost:1025</code> - Para usar con MailHog (necesita estar instalado y corriendo)</li>
+                <li><code>smtp://user:pass@smtp.example.com:25</code> - Para usar un servidor SMTP real</li>
+                <li><code>null://null</code> - Para deshabilitar el envío de correos</li>
+            </ul>
+        </div>
+    </div>
+    
+    <a href="{{ path('app_simple_email_test') }}" class="btn btn-primary mt-3">Enviar otro correo</a>
+    <a href="/" class="btn btn-secondary mt-3">Volver al inicio</a>
+</div>
+{% endblock %}

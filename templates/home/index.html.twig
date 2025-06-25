@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sistema de Gestión de Inventario{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">Sistema de Gestión de Inventario</h1>
+        <p class="lead">Sistema basado en Symfony, DDD y Arquitectura Hexagonal</p>
+        <hr class="my-4">
+        <p>Este sistema demuestra cómo implementar un gestor de inventario utilizando Domain-Driven Design y Arquitectura Hexagonal.</p>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Gestión de Productos</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Accede al sistema de gestión de productos para crear, ver, editar y eliminar productos.</p>
+                    <a href="{{ path('app_product_list') }}" class="btn btn-primary">Ir a Productos</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Pruebas de Correo</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Prueba el sistema de correo electrónico para verificar que funciona correctamente.</p>
+                    <a href="{{ path('app_simple_email_test') }}" class="btn btn-primary">Prueba Simple</a>
+                    <a href="{{ path('app_email_test') }}" class="btn btn-secondary">Prueba Avanzada</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Documentación</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Accede a la documentación del sistema para entender su arquitectura y funcionamiento.</p>
+                    <a href="{{ path('app_documentation') }}" class="btn btn-info">Ver Documentación</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Herramientas de Desarrollo</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Accede a herramientas útiles para desarrolladores.</p>
+                    <a href="/console-web" class="btn btn-secondary">Consola Web</a>
+                    <a href="/profiler" class="btn btn-secondary">Profiler</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
