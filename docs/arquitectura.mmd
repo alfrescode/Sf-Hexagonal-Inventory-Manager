@@ -1,0 +1,74 @@
+````mermaid
+graph TD
+    %% Capa de UI
+    UI[Usuario/Cliente] --> REST[UI - REST API]
+    UI --> CLI[UI - Línea de Comandos]
+    
+    %% Capa de Aplicación - Comandos
+    REST --> CC[Command Controller]
+    CLI --> CC
+    
+    CC --> CMD[Comando]
+    CMD --> CMDH[Manejador de Comando]
+    
+    %% Flujo de Comandos
+    subgraph "Capa de Aplicación (Application Layer)"
+        CMD
+        CMDH
+        EVL[Event Listeners]
+    end
+    
+    %% Capa de Dominio
+    subgraph "Capa de Dominio (Domain Layer)"
+        ENT[Entidades/Agregados]
+        VO[Value Objects]
+        REPO[Interfaces Repositorio]
+        EVT[Eventos de Dominio]
+    end
+    
+    CMDH --> ENT
+    ENT --> EVT
+    ENT --> VO
+    CMDH --> REPO
+    
+    EVT --> EVL
+    
+    %% Capa de Infraestructura
+    subgraph "Capa de Infraestructura (Infrastructure Layer)"
+        DOCREPO[DoctrineProductRepository]
+        DB[(Base de datos)]
+        EMAIL[Email Service]
+        LOG[Logger Service]
+    end
+    
+    REPO -.-> DOCREPO
+    DOCREPO --> DB
+    EVL --> EMAIL
+    EVL --> LOG
+    
+    %% Flujo de Queries
+    REST --> QC[Query Controller]
+    QC --> QRY[Query]
+    QRY --> QRYH[Manejador de Query]
+    
+    subgraph "Queries (CQRS)"
+        QRY
+        QRYH
+        DTO[DTOs de Respuesta]
+    end
+    
+    QRYH --> REPO
+    QRYH --> DTO
+    DTO --> REST
+    
+    %% Estilos
+    classDef application fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef domain fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef infrastructure fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef ui fill:#fbb,stroke:#333,stroke-width:2px;
+    
+    class CMD,CMDH,EVL,QRY,QRYH,DTO application;
+    class ENT,VO,REPO,EVT domain;
+    class DOCREPO,DB,EMAIL,LOG infrastructure;
+    class REST,CLI,CC,QC ui;
+````

@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalle de Producto{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ product.name }}</h1>
+    
+    <div class="mb-3">
+        <a href="{{ path('app_product_list') }}" class="btn btn-secondary">Volver al Listado</a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Información General</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID:</strong> {{ product.id }}</p>
+                    <p><strong>Nombre:</strong> {{ product.name }}</p>
+                    <p><strong>Precio Base:</strong> {{ product.price|number_format(2, ',', '.') }} €</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Stock:</strong> {{ product.stock }}</p>
+                    <p><strong>Variantes:</strong> {{ product.variants|length }}</p>
+                </div>
+            </div>
+            <p><strong>Descripción:</strong></p>
+            <p>{{ product.description }}</p>
+        </div>
+    </div>
+    
+    {% if product.variants|length > 0 %}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Variantes</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Talla</th>
+                            <th>Color</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Imagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for variant in product.variants %}
+                        <tr>
+                            <td>{{ variant.size }}</td>
+                            <td>{{ variant.color }}</td>
+                            <td>{{ variant.price|number_format(2, ',', '.') }} €</td>
+                            <td>{{ variant.stock }}</td>
+                            <td>
+                                {% if variant.imageUrl %}
+                                    <a href="{{ variant.imageUrl }}" target="_blank">Ver imagen</a>
+                                {% else %}
+                                    Sin imagen
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Documentación{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .doc-card {
+            transition: all 0.3s ease;
+        }
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Documentación del Sistema</h1>
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <div class="mb-3">
+        <a href="{{ path('app_home') }}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+    
+    <div class="row">
+        {% for file in markdownFiles %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 doc-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ file.name|capitalize }}</h5>
+                        <p class="card-text text-muted">{{ file.filename }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ path('app_documentation_show', {'filename': file.filename}) }}" class="btn btn-primary">Ver Documento</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No se encontraron archivos de documentación disponibles.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

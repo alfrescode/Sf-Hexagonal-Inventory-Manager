@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Crear Producto{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Crear Nuevo Producto</h1>
+    
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Formulario de Producto</h5>
+        </div>
+        <div class="card-body">
+            <div class="product-form">
+                {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                
+                <div class="mb-3">
+                    {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.name) }}
+                    <div class="form-text text-danger">
+                        {{ form_errors(form.name) }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description) }}
+                    <div class="form-text text-danger">
+                        {{ form_errors(form.description) }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.price, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.price) }}
+                    <div class="form-text text-danger">
+                        {{ form_errors(form.price) }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.stock, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.stock) }}
+                    <div class="form-text text-danger">
+                        {{ form_errors(form.stock) }}
+                    </div>
+                </div>
+                
+                {{ form_widget(form.guardar) }}
+                
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="{{ path('app_product_list') }}" class="btn btn-secondary">Volver al listado</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .product-form {
+            max-width: 800px;
+            margin: auto;
+        }
+        .form-control {
+            margin-bottom: 0;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Formulario de creación de producto cargado');
+        });
+    </script>
+{% endblock %}
