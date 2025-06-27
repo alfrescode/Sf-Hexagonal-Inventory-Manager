@@ -21,6 +21,54 @@ final class ProductVariant
         $this->imageUrl = $imageUrl;
     }
 
-    // Comentario indicando que aquí irían los métodos getters para acceder a las propiedades privadas.
-    // Getters...
+    //getters y setters para acceder y modificar las propiedades privadas.
+    public function getSize(): string
+    {
+        return $this->size;
+    }
+
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    public function getPrice(): ProductPrice
+    {
+        return $this->price;
+    }
+
+    public function getStock(): ProductStock
+    {
+        return $this->stock;
+    }
+
+    public function getImageUrl(): string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setSize(string $size): void
+    {
+        $this->size = $size;
+    }
+
+    public function setColor(string $color): void
+    {
+        $this->color = $color;
+    }
+
+    public function setPrice(ProductPrice $price): void
+    {
+        $this->price = $price;
+    }
+
+    public function setStock(ProductStock $stock): void
+    {
+        $this->stock = $stock;
+    }
+
+    public function setImageUrl(string $imageUrl): void
+    {
+        $this->imageUrl = $imageUrl;
+    }
 }

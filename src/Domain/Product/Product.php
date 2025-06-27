@@ -6,7 +6,7 @@ use App\Domain\Product\ValueObject\ProductName;
 use App\Domain\Product\ValueObject\ProductPrice;
 use App\Domain\Product\ValueObject\ProductStock;
 
-final class Product
+final class Product 
 {
     private ProductId $id;
     private ProductName $name;
@@ -34,6 +34,63 @@ final class Product
         $this->variants = $variants;
     }
 
-    // Aquí irían los métodos getters para acceder a las propiedades.
-    // Getters...
+    //implementamos los métodos getters y setters necesarios para acceder y modificar las propiedades privadas.
+    public function getId(): ProductId
+    {
+        return $this->id;
+    }
+    public function getName(): ProductName
+    {
+        return $this->name;
+    }
+    public function setName(ProductName $name): void
+    {        $this->name = $name;
+    }
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+    public function getPrice(): ProductPrice
+    {
+        return $this->price;
+    }
+    public function setPrice(ProductPrice $price): void 
+    {
+        $this->price = $price;
+    }
+    public function getStock(): ProductStock
+    {
+        return $this->stock;
+    }
+    public function setStock(ProductStock $stock): void
+    {
+        $this->stock = $stock;
+    }
+    public function setVariants(array $variants): void
+    {
+        $this->variants = $variants;
+    }
+    /**
+     * @return ProductVariant[]
+     */
+    public function getVariants(): array
+    {
+        return $this->variants;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            'Product: %s, Name: %s, Description: %s, Price: %s, Stock: %s',
+            (string)$this->id,
+            (string)$this->name,
+            $this->description,
+            (string)$this->price,
+            (string)$this->stock
+        );
+    }
 }

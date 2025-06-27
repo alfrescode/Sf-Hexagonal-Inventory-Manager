@@ -1,25 +1,30 @@
 <?php
 namespace App\Domain\Product\ValueObject;
 
-final class ProductName
+class ProductName
 {
-    private string $value;
+    private string $name;
 
     public function __construct(string $name)
     {
         if (empty($name)) {
-            throw new \InvalidArgumentException("El nombre del producto no puede estar vacío.");
+            throw new \InvalidArgumentException('El nombre del producto no puede estar vacío');
         }
-        $this->value = $name;
+        
+        if (strlen($name) > 255) {
+            throw new \InvalidArgumentException('El nombre del producto no puede tener más de 255 caracteres');
+        }
+        
+        $this->name = $name;
     }
 
-    public function value(): string
+    public function getValue(): string
     {
-        return $this->value;
+        return $this->name;
     }
 
     public function __toString(): string
     {
-        return $this->value;
+        return $this->name;
     }
 }

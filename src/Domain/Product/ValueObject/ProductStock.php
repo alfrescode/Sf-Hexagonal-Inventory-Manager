@@ -1,20 +1,27 @@
 <?php
+
 namespace App\Domain\Product\ValueObject;
 
-final class ProductStock
+class ProductStock
 {
-    private int $value;
+    private int $stock;
 
     public function __construct(int $stock)
     {
         if ($stock < 0) {
-            throw new \InvalidArgumentException("El stock no puede ser negativo.");
+            throw new \InvalidArgumentException('El stock del producto no puede ser negativo');
         }
-        $this->value = $stock;
+        
+        $this->stock = $stock;
     }
 
-    public function value(): int
+    public function getValue(): int
     {
-        return $this->value;
+        return $this->stock;
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->stock;
     }
 }

@@ -2,24 +2,24 @@
 
 namespace App\Domain\Product\ValueObject;
 
-final class ProductId
+use Symfony\Component\Uid\Uuid;
+
+class ProductId
 {
-    private string $value;
+    private string $id;
 
-
-    public function __construct(string $id)
+    public function __construct(?string $id = null)
     {
-        $this->value = $id;
+        $this->id = $id ?? (string) Uuid::v4();
     }
 
-    public function value(): string
+    public function getValue(): string
     {
-        return $this->value;
+        return $this->id;
     }
-
 
     public function __toString(): string
     {
-        return $this->value;
+        return $this->id;
     }
 }
