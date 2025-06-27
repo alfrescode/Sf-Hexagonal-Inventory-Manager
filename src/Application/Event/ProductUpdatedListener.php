@@ -2,74 +2,20 @@
 
 namespace App\Application\Event;
 
-use App\Domain\Product\Event\ProductUpdatedEvent;
-use App\Infrastructure\Email\Contract\EmailSenderInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use App\Domain\Product\Event\ProductUpdatedEvent;
 
-/**
- * Escucha los eventos de actualización de productos y ejecuta acciones en respuesta.
- */
-class ProductUpdatedListener implements EventSubscriberInterface
+class ProductUpdatedListener
 {
     private LoggerInterface $logger;
-    private EmailSenderInterface $emailSender;
 
-    public function __construct(
-        LoggerInterface $logger,
-        EmailSenderInterface $emailSender
-    ) {
-        $this->logger = $logger;
-        $this->emailSender = $emailSender;
-    }
-
-    public static function getSubscribedEvents(): array
+    public function __construct(LoggerInterface $logger)
     {
-        return [
-            ProductUpdatedEvent::class => 'onProductUpdated',
-        ];
+        $this->logger = $logger;
     }
 
-    /**
-     * Maneja el evento de actualización de producto.
-     *
-     * @param ProductUpdatedEvent $event
-     */
     public function onProductUpdated(ProductUpdatedEvent $event): void
     {
-        $product = $event->getProduct();
-        
-        // Registrar la actualización del producto
-        $this->logger->info(
-            'Producto actualizado',
-            [
-                'id' => $product->getId()->value(),
-                'name' => $product->getName()->value(),
-                'price' => $product->getPrice()->value(),
-                'stock' => $product->getStock()->value(),
-            ]
-        );
-
-        // Enviar correo de notificación
-        $subject = 'Producto actualizado: ' . $product->getName()->value();
-        
-        $body = sprintf(
-            '<h1>Se ha actualizado un producto</h1>
-            <p>Detalles del producto:</p>
-            <ul>
-                <li><strong>ID:</strong> %s</li>
-                <li><strong>Nombre:</strong> %s</li>
-                <li><strong>Descripción:</strong> %s</li>
-                <li><strong>Precio:</strong> %.2f</li>
-                <li><strong>Stock:</strong> %d</li>
-            </ul>',
-            $product->getId()->value(),
-            $product->getName()->value(),
-            $product->getDescription(),
-            $product->getPrice()->value(),
-            $product->getStock()->value()
-        );
-        
-        $this->emailSender->send('pepe@up-spain.com', $subject, $body);
+        $this->logger->info('Product updated: ' . $event->getProductId());
     }
 }

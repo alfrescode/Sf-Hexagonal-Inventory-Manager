@@ -1,20 +1,21 @@
 <?php
-namespace App\Application\Command\CreateProduct; // Define el espacio de nombres para organizar el código y evitar conflictos de nombres.
 
-class CreateProductCommand // Declara la clase CreateProductCommand.
+namespace App\Application\Command\CreateProduct;
+
+/**
+ * Comando para crear un producto.
+ */
+class CreateProductCommand
 {
-    public string $name;
-    public string $description;
-    public float $price;
-    public int $stock;
-    public array $variants;
-
-    public function __construct(string $name, string $description, float $price, int $stock, array $variants = [])
-    {
-        $this->name = $name; // Asigna el nombre recibido al atributo $name.
-        $this->description = $description; // Asigna la descripción recibida al atributo $description.
-        $this->price = $price; // Asigna el precio recibido al atributo $price.
-        $this->stock = $stock; // Asigna el stock recibido al atributo $stock.
-        $this->variants = $variants; // Asigna las variantes recibidas al atributo $variants. Cada variante es un array asociativo con detalles como talla, color, precio, stock e imagen.
+    /**
+     * @param string $name Nombre del producto
+     * @param float $price Precio del producto
+     * @param int $stock Cantidad en stock
+     */
+    public function __construct(
+        public readonly string $name,
+        public readonly float $price,
+        public readonly int $stock
+    ) {
     }
 }
