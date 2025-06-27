@@ -44,8 +44,9 @@ class ProductStockTest extends TestCase
     {
         // Assert
         $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('El stock no puede ser negativo');
         
         // Act
-        new ProductStock(-5);
+        new ProductStock(-1);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Tests\Unit\Application\Event;
 
-use App\Application\Event\ProductCreatedListener;
-use App\Domain\Product\Event\ProductCreatedEvent;
+use App\Application\Event\ProductUpdatedListener;
+use App\Domain\Product\Event\ProductUpdatedEvent;
 use App\Domain\Product\Product;
 use App\Domain\Product\ValueObject\ProductId;
 use App\Domain\Product\ValueObject\ProductName;
@@ -12,27 +12,27 @@ use App\Domain\Product\ValueObject\ProductStock;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class ProductCreatedListenerTest extends TestCase
+class ProductUpdatedListenerTest extends TestCase
 {
-    public function testShouldLogProductCreation(): void
+    public function testShouldLogProductUpdate(): void
     {
         $loggerMock = $this->createMock(LoggerInterface::class);
-        $listener = new ProductCreatedListener($loggerMock);
+        $listener = new ProductUpdatedListener($loggerMock);
 
         $product = new Product(
             new ProductId('product-id'),
             new ProductName('Test Product'),
-            'Descripción del producto',  // Añadimos la descripción como string
+            'Descripción del producto actualizado', // Añadimos la descripción como string
             new ProductPrice(100),
             new ProductStock(10)
         );
 
-        $event = new ProductCreatedEvent($product);
+        $event = new ProductUpdatedEvent($product);
 
         $loggerMock->expects($this->once())
             ->method('info')
             ->with($this->stringContains('product-id'));
 
-        $listener->onProductCreated($event);
+        $listener->onProductUpdated($event);
     }
 }
