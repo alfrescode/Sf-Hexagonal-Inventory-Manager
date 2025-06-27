@@ -155,8 +155,6 @@ Esta estructura completa refleja:
    - Fácilmente extensible
 
 ## Estructura del Proyecto
-
-```
 src/
 ├── Domain/                           # Capa de Dominio: Entidades, Value Objects, Eventos
 │   └── Product/
@@ -206,8 +204,9 @@ src/
     └── CLI/                       # Interfaz de Línea de Comandos
         └── Command/
             └── CreateProductCommand.php
-```
 
+            crea uno actualizado
+            
 ## Estrategia de Implementación
 
 ### 1. Dominio (Domain Layer)
@@ -255,3 +254,74 @@ src/
 4. El dominio emite eventos cuando ocurren cambios importantes
 5. Los listeners reaccionan a los eventos (ej: envío de emails)
 6. La persistencia se realiza a través de los puertos del dominio
+
+## Operaciones CRUD Implementadas
+
+### 1. Crear Producto (CREATE)
+- **Endpoint**: `POST /api/products`
+- **Controller**: `ProductController::create()`
+- **Command**: `CreateProductCommand`
+- **Handler**: `CreateProductHandler`
+- **Evento**: `ProductCreatedEvent`
+- **Listener**: `ProductCreatedListener`
+
+### 2. Obtener Producto (READ)
+- **Endpoint**: `GET /api/products/{id}`
+- **Query**: `GetProductQuery`
+- **Handler**: `GetProductHandler`
+- **DTO**: `ProductDTO`
+
+### 3. Listar Productos (READ)
+- **Endpoint**: `GET /api/products`
+- **Query**: `ListProductsQuery`
+- **Handler**: `ListProductsHandler`
+- **DTO**: `ProductsListDTO`
+
+### 4. Actualizar Producto (UPDATE)
+- **Endpoint**: `PUT /api/products/{id}`
+- **Command**: `UpdateProductCommand`
+- **Handler**: `UpdateProductHandler`
+- **Evento**: `ProductUpdatedEvent`
+- **Listener**: `ProductUpdatedListener`
+
+### 5. Eliminar Producto (DELETE)
+- **Endpoint**: `DELETE /api/products/{id}`
+- **Command**: `DeleteProductCommand`
+- **Handler**: `DeleteProductHandler`
+- **Evento**: `ProductDeletedEvent`
+- **Listener**: `ProductDeletedListener`
+
+## Arquitectura de Eventos
+
+El sistema utiliza eventos de dominio para desacoplar las operaciones principales de las acciones secundarias:
+
+1. **Eventos de Dominio**:
+   - `ProductCreatedEvent`: Notifica la creación de un producto
+   - `ProductUpdatedEvent`: Notifica la actualización de un producto
+   - `ProductDeletedEvent`: Notifica la eliminación de un producto
+
+2. **Listeners de Aplicación**:
+   - `ProductCreatedListener`: Reacciona a la creación (ej: logging, email)
+   - `ProductUpdatedListener`: Reacciona a la actualización (ej: logging, notificaciones)
+   - `ProductDeletedListener`: Reacciona a la eliminación (ej: logging, limpieza)
+
+## Cómo Extender el Sistema
+
+### Añadir Nuevo Value Object
+1. Crear la clase en `Domain/Product/ValueObject/`
+2. Implementar validaciones y lógica en el constructor
+3. Añadir métodos `value()` y `__toString()`
+
+### Añadir Nuevo Evento
+1. Crear el evento en `Domain/Product/Event/`
+2. Crear el listener en `Application/Event/`
+3. Registrar el listener en la configuración
+
+### Añadir Nuevo Endpoint
+1. Agregar el método al controlador en `UI/Rest/Controller/`
+2. Crear DTOs necesarios en `UI/Rest/DTO/`
+3. Implementar Command/Query y Handler correspondientes
+
+## Conclusión
+
+Esta implementación demuestra cómo aplicar los principios de DDD y arquitectura hexagonal en un sistema de gestión de inventario, logrando un código limpio, mantenible y escalable que separa claramente las responsabilidades y permite cambiar componentes sin afectar al núcleo del negocio.

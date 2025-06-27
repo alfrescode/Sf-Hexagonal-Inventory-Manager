@@ -1,0 +1,95 @@
+```mermaid
+graph TD
+    %% Definimos los puntos de entrada (UI)
+    CLIENT((Cliente)) -->|Petición HTTP| REST[API REST]
+    USER((Usuario)) -->|Comando CLI| CLI[Consola]
+
+    %% Flujo de Comandos
+    subgraph "UI Layer (Interfaces de Usuario)"
+        REST -->|Datos JSON| RESTDTO[DTO Request]
+        REST --> RESTC[Controlador REST]
+        CLI --> CLIC[Comando Symfony]
+    end
+
+    %% Flujo desde Controladores a Commands
+    RESTC -->|Crea| CMD[Comando]
+    CLIC -->|Crea| CMD
+    
+    subgraph "Application Layer (Capa de Aplicación)"
+        CMD -->|Pasa a| CMDH[Command Handler]
+        CMDH -->|Usa| FACT[Factory]
+        CMDH -->|Usa| REPO[(Repositorio)]
+        CMDH -->|Dispara| EVDISP[Event Dispatcher]
+        
+        %% Flujo de Queries
+        RESTC -->|Crea| QRY[Query]
+        QRY -->|Pasa a| QRYH[Query Handler]
+        QRYH -->|Consulta| REPO
+        QRYH -->|Crea| DTO[DTO Response]
+        DTO -->|Devuelve| REST
+    end
+    
+    %% Capa de Dominio
+    subgraph "Domain Layer (Capa de Dominio)"
+        %% Entidades y Value Objects
+        FACT -->|Crea| AGG[Agregado Product]
+        AGG -->|Contiene| ENT[Entidad ProductVariant]
+        AGG -->|Usa| VO[Value Objects]
+        
+        %% Eventos de dominio
+        AGG -->|Genera| EV[Evento de Dominio]
+        EV -->|Enviado a| EVDISP
+        
+        %% Interfaces del repositorio
+        REPO -->|Implementa| REPOI[Interface Repositorio]
+    end
+    
+    %% Capa de Infraestructura
+    subgraph "Infrastructure Layer (Capa de Infraestructura)"
+        %% Repositorios
+        REPOI -.-> DOCREPO[DoctrineProductRepository]
+        REPOI -.-> FILEREPO[FileProductRepository]
+        
+        %% Persistencia
+        DOCREPO -->|Mapea a| DOCENT[Entidad Doctrine]
+        DOCENT -->|Persiste en| DB[(Base de Datos)]
+        FILEREPO -->|Guarda en| FILE[(Archivo)]
+        
+        %% Dispatcher de eventos
+        EVDISP -.-> SYMDISP[Symfony Event Dispatcher]
+        SYMDISP -->|Notifica a| EVL[Event Listeners]
+        
+        %% Servicios externos
+        EVL -->|Usa| EMAIL[Servicio de Email]
+        EVL -->|Usa| LOG[Servicio de Logging]
+    end
+    
+    %% Detalles del flujo de creación de un producto
+    subgraph "Flujo Detallado: Creación de un Producto"
+        FLOW_CLIENT[Cliente REST] -->|POST /api/products| FLOW_REST[ProductController::create()]
+        FLOW_REST -->|Parsea JSON| FLOW_DTO[CreateProductRequest]
+        FLOW_DTO -->|Convierte a| FLOW_CMD[CreateProductCommand]
+        FLOW_CMD -->|Pasa a| FLOW_HANDLER[CreateProductHandler]
+        FLOW_HANDLER -->|Crea| FLOW_PRODUCT[Product]
+        FLOW_PRODUCT -->|Con| FLOW_VO[ProductId, ProductName, ProductPrice, ProductStock]
+        FLOW_HANDLER -->|Guarda mediante| FLOW_REPO[ProductRepositoryInterface]
+        FLOW_HANDLER -->|Dispara| FLOW_EVENT[ProductCreatedEvent]
+        FLOW_EVENT -->|Manejado por| FLOW_LISTENER[ProductCreatedListener]
+        FLOW_LISTENER -->|Envía| FLOW_EMAIL[Email de confirmación]
+        FLOW_LISTENER -->|Registra en| FLOW_LOG[Log]
+        FLOW_REST -->|Responde| FLOW_RESPONSE[Response 201 Created]
+    end
+
+    %% Estilos
+    classDef ui fill:#ffcccc,stroke:#333,stroke-width:1px;
+    classDef application fill:#ccccff,stroke:#333,stroke-width:1px;
+    classDef domain fill:#ccffcc,stroke:#333,stroke-width:1px;
+    classDef infrastructure fill:#ffffcc,stroke:#333,stroke-width:1px;
+    classDef flow fill:#f9f9f9,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5;
+
+    class REST,CLI,RESTC,CLIC,RESTDTO ui;
+    class CMD,CMDH,QRY,QRYH,DTO,FACT,EVDISP application;
+    class AGG,ENT,VO,EV,REPOI domain;
+    class DOCREPO,FILEREPO,DOCENT,DB,FILE,SYMDISP,EVL,EMAIL,LOG infrastructure;
+    class FLOW_CLIENT,FLOW_REST,FLOW_DTO,FLOW_CMD,FLOW_HANDLER,FLOW_PRODUCT,FLOW_VO,FLOW_REPO,FLOW_EVENT,FLOW_LISTENER,FLOW_EMAIL,FLOW_LOG,FLOW_RESPONSE flow;
+```

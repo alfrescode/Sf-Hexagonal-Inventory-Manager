@@ -1,0 +1,102 @@
+```mermaid
+graph TD
+    %% Definición de los estilos
+    classDef ui fill:#FF9999,stroke:#333,stroke-width:2px;
+    classDef application fill:#FFCC99,stroke:#333,stroke-width:2px;
+    classDef domain fill:#99CCFF,stroke:#333,stroke-width:2px;
+    classDef infrastructure fill:#99FF99,stroke:#333,stroke-width:2px;
+
+    %% Capa de UI (Interfaz de Usuario)
+    HTTP[Cliente HTTP] --> REST_CTRL[UI - Controlador REST]
+    CONSOLE[Terminal] --> CLI_CTRL[UI - Comando de Consola]
+    
+    %% Patrón CQRS (Command Query Responsibility Segregation)
+    subgraph "Patrón CQRS"
+        %% Command (Comandos para modificar estado)
+        REST_CTRL --> CMD[Command]
+        CLI_CTRL --> CMD
+        CMD --> CMD_HANDLER[Command Handler]
+        
+        %% Query (Consultas para leer datos)
+        REST_CTRL --> QUERY[Query]
+        CLI_CTRL --> QUERY
+        QUERY --> QUERY_HANDLER[Query Handler]
+        QUERY_HANDLER --> DTO[Data Transfer Object]
+        DTO --> REST_CTRL
+    end
+    
+    %% Capa de Dominio (Core de la aplicación)
+    subgraph "Dominio (Domain)"
+        %% Entidades y objetos de valor
+        ENTITY[Entidad Product]
+        VALUE_OBJ[Value Objects<br/>ProductId, ProductName, etc.]
+        ENTITY_VARIANT[Entidad ProductVariant]
+        
+        %% Eventos de dominio
+        DOMAIN_EVENT[Eventos de Dominio<br/>ProductCreatedEvent, etc.]
+        
+        %% Interfaces de repositorio
+        REPO_INTERFACE[Interfaces de Repositorio<br/>ProductRepositoryInterface]
+        
+        %% Relaciones dentro del dominio
+        ENTITY --> VALUE_OBJ
+        ENTITY --> ENTITY_VARIANT
+        ENTITY --> DOMAIN_EVENT
+    end
+    
+    %% Relaciones entre Aplicación y Dominio
+    CMD_HANDLER --> ENTITY
+    CMD_HANDLER --> REPO_INTERFACE
+    QUERY_HANDLER --> REPO_INTERFACE
+    
+    %% Capa de Infraestructura
+    subgraph "Infraestructura (Infrastructure)"
+        %% Implementación de repositorios
+        REPO_IMPL[Implementación de Repositorio<br/>DoctrineProductRepository]
+        
+        %% Base de datos
+        DATABASE[(Base de Datos)]
+        
+        %% Event listeners
+        EVENT_LISTENER[Event Listeners<br/>ProductCreatedListener, etc.]
+        
+        %% Servicios externos
+        LOGGER[Servicio de Logs]
+        EMAIL[Servicio de Email]
+    end
+    
+    %% Relaciones entre Dominio e Infraestructura
+    REPO_INTERFACE -.Implementa.-> REPO_IMPL
+    REPO_IMPL --> DATABASE
+    DOMAIN_EVENT --> EVENT_LISTENER
+    EVENT_LISTENER --> LOGGER
+    EVENT_LISTENER --> EMAIL
+    
+    %% Flujo completo de creación de producto
+    HTTP -->|POST /products| REST_CTRL
+    REST_CTRL -->|CreateProductCommand| CMD
+    CMD -->|Ejecuta| CMD_HANDLER
+    CMD_HANDLER -->|Crea| ENTITY
+    CMD_HANDLER -->|Guarda| REPO_INTERFACE
+    REPO_INTERFACE -.-> REPO_IMPL
+    REPO_IMPL -->|Persiste| DATABASE
+    ENTITY -->|Dispara| DOMAIN_EVENT
+    DOMAIN_EVENT -->|Notifica| EVENT_LISTENER
+    EVENT_LISTENER -->|Registra| LOGGER
+    
+    %% Flujo completo de consulta de producto
+    HTTP -->|GET /products/{id}| REST_CTRL
+    REST_CTRL -->|GetProductQuery| QUERY
+    QUERY -->|Ejecuta| QUERY_HANDLER
+    QUERY_HANDLER -->|Consulta| REPO_INTERFACE
+    REPO_INTERFACE -.-> REPO_IMPL
+    REPO_IMPL -->|Lee| DATABASE
+    QUERY_HANDLER -->|Mapea a| DTO
+    DTO -->|Responde| REST_CTRL
+    
+    %% Aplicar estilos
+    class HTTP,REST_CTRL,CLI_CTRL,CONSOLE ui;
+    class CMD,CMD_HANDLER,QUERY,QUERY_HANDLER,DTO application;
+    class ENTITY,VALUE_OBJ,ENTITY_VARIANT,DOMAIN_EVENT,REPO_INTERFACE domain;
+    class REPO_IMPL,DATABASE,EVENT_LISTENER,LOGGER,EMAIL infrastructure;
+```
