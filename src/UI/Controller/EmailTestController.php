@@ -3,6 +3,7 @@
 namespace App\UI\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Infrastructure\Email\Contract\EmailSenderInterface;
@@ -38,13 +39,32 @@ class EmailTestController extends AbstractController
         ]);
     }
     
-    #[Route('/email-test/send', name: 'app_email_test_send')]
-    public function send(EmailSenderInterface $emailSender): Response
+    #[Route('/email-test/send', name: 'app_email_test_send', methods: ['POST'])]
+    public function send(Request $request, EmailSenderInterface $emailSender): Response
     {
+        $email = $request->request->get('email');
+        $subject = $request->request->get('subject');
+        $message = $request->request->get('message');
+        
+        // Validación básica
+        if (!$email || !$subject || !$message) {
+            $this->addFlash('danger', 'Por favor, complete todos los campos del formulario.');
+            return $this->redirectToRoute('app_email_test');
+        }
+        
+        // Validar formato de email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->addFlash('danger', 'Por favor, ingrese una dirección de correo válida.');
+            return $this->redirectToRoute('app_email_test');
+        }
+        
+        // Convertir el mensaje de texto plano a HTML básico
+        $htmlMessage = nl2br(htmlspecialchars($message));
+        
         $success = $emailSender->send(
-            'pepe@up-spain.com',
-            'Correo de prueba',
-            '<h1>Este es un correo de prueba</h1><p>Enviado desde el controlador de prueba.</p>'
+            $email,
+            $subject,
+            $htmlMessage
         );
         
         $this->addFlash(
